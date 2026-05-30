@@ -1,0 +1,93 @@
+// Prisma schema for the Kids Learning platform.
+//
+// DATABASE: defaults to SQLite for zero-setup local development.
+// To switch to PostgreSQL (or MySQL) for production:
+//   1. Change `provider` below to "postgresql" (or "mysql").
+//   2. Set DATABASE_URL in .env to your connection string, e.g.
+//      postgresql://user:pass@localhost:5432/kidslearning
+//   3. Run `npm run db:push && npm run db:seed`.
+// The models below are database-agnostic and require no other changes.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// Role is stored as a string ("child" | "parent" | "admin").
+// SQLite has no native enum support; values are validated in the API layer.
+model User {
+  id        Int        @id @default(autoincrement())
+  name      String
+  email     String?    @unique
+  password  String? // hashed; optional for child profiles created under a parent
+  role      String     @default("child")
+  xp        Int        @default(0)
+  level     Int        @default(1)
+  // Self-relation: a parent can own several child profiles.
+  parentId  Int?
+  parent    User?      @relation("ParentChildren", fields: [parentId], references: [id])
+  children  User[]     @relation("ParentChildren")
+  progress  Progress[]
+  achievements Achievement[]
+  createdAt DateTime   @default(now())
+}
+
+model Achievement {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  key       String // stable identifier, e.g. "high_scorer"
+  label     String // display name, e.g. "High Scorer"
+  icon      String? // emoji / icon for the UI
+  awardedAt DateTime @default(now())
+
+  // A user can only earn a given badge once.
+  @@unique([userId, key])
+  @@index([userId])
+}
+
+model Subject {
+  id          Int      @id @default(autoincrement())
+  name        String   @unique
+  description String?
+  icon        String? // emoji / icon name for the UI
+  color       String? // tailwind-friendly accent color
+  games       Game[]
+  createdAt   DateTime @default(now())
+}
+
+model Game {
+  id              Int        @id @default(autoincrement())
+  title           String
+  description     String?
+  subjectId       Int
+  subject         Subject    @relation(fields: [subjectId], references: [id], onDelete: Cascade)
+  difficultyLevel Int        @default(1) // 1 (easiest) … 5 (hardest)
+  points          Int        @default(100) // max points achievable
+  // Generic engine type: "math", "quiz", "spelling", "matching".
+  type            String     @default("quiz")
+  // Game payload (questions, options, etc.) stored as JSON string.
+  content         String     @default("{}")
+  active          Boolean    @default(true)
+  progress        Progress[]
+  createdAt       DateTime   @default(now())
+  updatedAt       DateTime   @updatedAt
+}
+
+model Progress {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  gameId    Int
+  game      Game     @relation(fields: [gameId], references: [id], onDelete: Cascade)
+  score     Int      @default(0)
+  completed Boolean  @default(false)
+  timestamp DateTime @default(now())
+
+  @@index([userId])
+  @@index([gameId])
+}
