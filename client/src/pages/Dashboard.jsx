@@ -149,7 +149,8 @@ export default function Dashboard() {
       </div>
     </div>
   );
-});
+}
+
 const SubjectBars = memo(function SubjectBars({ bySubject }) {
   const entries = Object.entries(bySubject);
   if (entries.length === 0) return <p className="text-slate-400">Play games to fill this chart.</p>;
@@ -174,4 +175,4 @@ const SubjectBars = memo(function SubjectBars({ bySubject }) {
       ))}
     </div>
   );
-}
+});
