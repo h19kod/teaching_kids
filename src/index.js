@@ -11,6 +11,11 @@ import userRoutes from "./routes/users.js";
 import statsRoutes from "./routes/stats.js";
 import leaderboardRoutes from "./routes/leaderboard.js";
 import achievementRoutes from "./routes/achievements.js";
+import adaptiveRoutes from "./routes/adaptive.js";
+import missionsRoutes from "./routes/missions.js";
+import rewardsRoutes from "./routes/rewards.js";
+import storyRoutes from "./routes/story.js";
+import charactersRoutes from "./routes/characters.js";
 
 const app = express();
 const PORT = process.env.PORT || 4000;
@@ -33,6 +38,11 @@ app.use("/api/users", userRoutes);
 app.use("/api/stats", statsRoutes);
 app.use("/api/leaderboard", leaderboardRoutes);
 app.use("/api/achievements", achievementRoutes);
+app.use("/api/adaptive", adaptiveRoutes);
+app.use("/api/missions", missionsRoutes);
+app.use("/api/rewards", rewardsRoutes);
+app.use("/api/story", storyRoutes);
+app.use("/api/characters", charactersRoutes);
 
 // Centralized error handler.
 app.use((err, req, res, next) => {

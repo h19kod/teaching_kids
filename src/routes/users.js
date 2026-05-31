@@ -102,12 +102,107 @@ const adminUserSchema = z.object({
   role: z.enum(["child", "parent", "admin"]).optional(),
 });
 
+// GET /users/me -> retrieve the current authenticated user's profile.
+router.get("/me", requireAuth, async (req, res) => {
+  res.json(publicUser(req.user));
+});
+
 // GET /users/:id -> retrieve a profile (self, parent of, or admin).
 router.get("/:id", requireAuth, async (req, res) => {
   const target = await prisma.user.findUnique({ where: { id: Number(req.params.id) } });
   if (!target) return res.status(404).json({ error: "User not found" });
   if (!canAccessUser(req.user, target)) return res.status(403).json({ error: "Not allowed" });
   res.json(publicUser(target));
+});
+
+// GET /users/:id/stats -> get user statistics (parent/admin only)
+router.get("/:id/stats", requireAuth, requireRole("parent", "admin"), async (req, res) => {
+  const id = Number(req.params.id);
+  const target = await prisma.user.findUnique({ where: { id } });
+  if (!target) return res.status(404).json({ error: "User not found" });
+  if (!canAccessUser(req.user, target)) return res.status(403).json({ error: "Not allowed" });
+
+  // Get user's progress data
+  const progressData = await prisma.progress.findMany({
+    where: { userId: id },
+    include: {
+      game: {
+        include: {
+          subject: true,
+        },
+      },
+    },
+  });
+
+  // Calculate statistics
+  const totalPoints = progressData.reduce((sum, p) => sum + p.score, 0);
+  const gamesPlayed = progressData.length;
+  const completedGames = progressData.filter((p) => p.completed).length;
+  const accuracyRate = gamesPlayed > 0 ? (completedGames / gamesPlayed) * 100 : 0;
+
+  // Calculate points by subject
+  const bySubject = {};
+  progressData.forEach((p) => {
+    const subjectName = p.game.subject.name;
+    if (!bySubject[subjectName]) {
+      bySubject[subjectName] = 0;
+    }
+    bySubject[subjectName] += p.score;
+  });
+
+  // Determine strong and weak subjects
+  const sortedSubjects = Object.entries(bySubject).sort((a, b) => b[1] - a[1]);
+  const strongSubjects = sortedSubjects.slice(0, 2).map(([name]) => name);
+  const weakSubjects = sortedSubjects.slice(-2).map(([name]) => name);
+
+  // Get user's statistics if they exist
+  let statistics = await prisma.statistics.findUnique({
+    where: { userId: id },
+  });
+
+  if (!statistics) {
+    // Create statistics if they don't exist
+    statistics = await prisma.statistics.create({
+      data: {
+        userId: id,
+        totalPoints,
+        gamesPlayed,
+        accuracyRate,
+        completedLevels: completedGames,
+        achievementsEarned: 0,
+        strongSubjects: JSON.stringify(strongSubjects),
+        weakSubjects: JSON.stringify(weakSubjects),
+      },
+    });
+  } else {
+    // Update statistics
+    statistics = await prisma.statistics.update({
+      where: { userId: id },
+      data: {
+        totalPoints,
+        gamesPlayed,
+        accuracyRate,
+        completedLevels: completedGames,
+        strongSubjects: JSON.stringify(strongSubjects),
+        weakSubjects: JSON.stringify(weakSubjects),
+        lastPlayedAt: progressData.length > 0 ? new Date(Math.max(...progressData.map(p => new Date(p.timestamp).getTime()))) : null,
+      },
+    });
+  }
+
+  res.json({
+    totalPoints,
+    gamesPlayed,
+    accuracyRate: Math.round(accuracyRate),
+    learningTime: statistics.learningTime,
+    completedLevels: statistics.completedLevels,
+    achievementsEarned: statistics.achievementsEarned,
+    strongSubjects: statistics.strongSubjects,
+    weakSubjects: statistics.weakSubjects,
+    bySubject,
+    weeklyPlayTime: statistics.weeklyPlayTime,
+    monthlyPlayTime: statistics.monthlyPlayTime,
+  });
 });
 
 // PUT /users/:id -> update details. Self/parent may edit name & email;

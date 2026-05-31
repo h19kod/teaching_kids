@@ -20,30 +20,45 @@ datasource db {
 // Role is stored as a string ("child" | "parent" | "admin").
 // SQLite has no native enum support; values are validated in the API layer.
 model User {
-  id        Int        @id @default(autoincrement())
-  name      String
-  email     String?    @unique
-  password  String? // hashed; optional for child profiles created under a parent
-  role      String     @default("child")
-  xp        Int        @default(0)
-  level     Int        @default(1)
+  id                Int           @id @default(autoincrement())
+  name              String
+  email             String?       @unique
+  password          String?       // hashed; optional for child profiles created under a parent
+  role              String        @default("child")
+  xp                Int           @default(0)
+  level             Int           @default(1)
+  // Currencies
+  coins             Int           @default(0)
+  stars             Int           @default(0)
+  gems              Int           @default(0)
+  // Character customization
+  selectedCharacter Int?
+  character         Character?    @relation(fields: [selectedCharacter], references: [id])
   // Self-relation: a parent can own several child profiles.
-  parentId  Int?
-  parent    User?      @relation("ParentChildren", fields: [parentId], references: [id])
-  children  User[]     @relation("ParentChildren")
-  progress  Progress[]
-  achievements Achievement[]
-  createdAt DateTime   @default(now())
+  parentId          Int?
+  parent            User?         @relation("ParentChildren", fields: [parentId], references: [id])
+  children          User[]        @relation("ParentChildren")
+  progress          Progress[]
+  achievements      Achievement[]
+  missions          UserMission[]
+  inventory         Inventory[]
+  storyProgress     StoryProgress[]
+  leaderboardEntries LeaderboardEntry[]
+  statistics        Statistics?
+  createdAt         DateTime      @default(now())
 }
 
 model Achievement {
-  id        Int      @id @default(autoincrement())
-  userId    Int
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  key       String // stable identifier, e.g. "high_scorer"
-  label     String // display name, e.g. "High Scorer"
-  icon      String? // emoji / icon for the UI
-  awardedAt DateTime @default(now())
+  id          Int      @id @default(autoincrement())
+  userId      Int
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  key         String   // stable identifier, e.g. "high_scorer"
+  label       String   // display name, e.g. "High Scorer"
+  description String?
+  icon        String?  // emoji / icon for the UI
+  tier        String?  // "bronze", "silver", "gold", "platinum"
+  xpReward    Int      @default(0)
+  awardedAt   DateTime @default(now())
 
   // A user can only earn a given badge once.
   @@unique([userId, key])
@@ -90,4 +105,156 @@ model Progress {
 
   @@index([userId])
   @@index([gameId])
+}
+
+// ===== NEW MODELS FOR ADVENTURE PLATFORM =====
+
+model Character {
+  id          Int    @id @default(autoincrement())
+  name        String
+  description String?
+  icon        String // emoji or image URL
+  type        String // "explorer", "space_ranger", "science_wizard", "math_knight", "english_hero"
+  rarity      String // "common", "rare", "epic", "legendary"
+  cost        Int    @default(0) // cost in gems
+  unlockedBy  String? // achievement key required to unlock
+  users       User[]
+  inventory   Inventory[]
+  createdAt   DateTime @default(now())
+}
+
+model Reward {
+  id          Int       @id @default(autoincrement())
+  name        String
+  description String?
+  icon        String
+  type        String    // "costume", "pet", "rocket_skin", "decoration", "special_effect"
+  rarity      String    // "common", "rare", "epic", "legendary"
+  cost        Int       @default(0)
+  costType    String    @default("coins") // "coins", "stars", "gems"
+  unlockedBy  String?   // achievement key required to unlock
+  active      Boolean   @default(true)
+  inventory   Inventory[]
+  createdAt   DateTime @default(now())
+}
+
+model Mission {
+  id          Int           @id @default(autoincrement())
+  title       String
+  description String
+  type        String        // "daily", "weekly"
+  category    String?       // "games", "points", "story", "battles"
+  target      Int           // target value (e.g., 3 games, 100 points)
+  xpReward    Int           @default(0)
+  coinReward  Int           @default(0)
+  starReward  Int           @default(0)
+  gemReward   Int           @default(0)
+  active      Boolean       @default(true)
+  userMissions UserMission[]
+  createdAt   DateTime      @default(now())
+}
+
+model UserMission {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  missionId Int
+  mission   Mission  @relation(fields: [missionId], references: [id], onDelete: Cascade)
+  progress  Int      @default(0)
+  completed Boolean  @default(false)
+  claimed   Boolean  @default(false)
+  startDate DateTime @default(now())
+  endDate   DateTime?
+  completedAt DateTime?
+
+  @@unique([userId, missionId])
+  @@index([userId])
+}
+
+model StoryChapter {
+  id          Int             @id @default(autoincrement())
+  chapter     Int             // chapter number
+  title       String
+  description String
+  content     String          // JSON with story data
+  world       String          // "english", "math", "science", "space"
+  xpReward    Int             @default(0)
+  coinReward  Int             @default(0)
+  requiredLevel Int           @default(1)
+  progress    StoryProgress[]
+  createdAt   DateTime        @default(now())
+}
+
+model StoryProgress {
+  id          Int           @id @default(autoincrement())
+  userId      Int
+  user        User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  chapterId   Int
+  chapter     StoryChapter  @relation(fields: [chapterId], references: [id], onDelete: Cascade)
+  completed   Boolean       @default(false)
+  completedAt DateTime?
+  startedAt   DateTime      @default(now())
+
+  @@unique([userId, chapterId])
+  @@index([userId])
+}
+
+model Leaderboard {
+  id          Int               @id @default(autoincrement())
+  name        String
+  category    String            // "weekly", "monthly", "all_time", "math", "english", "science", "space"
+  period      String?           // "week", "month", "all"
+  entries     LeaderboardEntry[]
+  active      Boolean           @default(true)
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+}
+
+model LeaderboardEntry {
+  id           Int        @id @default(autoincrement())
+  userId       Int
+  user         User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  leaderboardId Int
+  leaderboard  Leaderboard @relation(fields: [leaderboardId], references: [id], onDelete: Cascade)
+  score        Int        @default(0)
+  rank         Int?
+  periodStart  DateTime?
+  periodEnd    DateTime?
+  updatedAt    DateTime   @updatedAt
+
+  @@unique([userId, leaderboardId])
+  @@index([leaderboardId])
+}
+
+model Inventory {
+  id          Int     @id @default(autoincrement())
+  userId      Int
+  user        User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  characterId Int?
+  character   Character? @relation(fields: [characterId], references: [id])
+  rewardId    Int?
+  reward      Reward? @relation(fields: [rewardId], references: [id])
+  equipped    Boolean @default(false)
+  obtainedAt  DateTime @default(now())
+
+  @@index([userId])
+}
+
+model Statistics {
+  id              Int      @id @default(autoincrement())
+  userId          Int      @unique
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  totalPoints     Int      @default(0)
+  gamesPlayed     Int      @default(0)
+  accuracyRate    Float    @default(0)
+  learningTime    Int      @default(0) // in minutes
+  completedLevels Int      @default(0)
+  achievementsEarned Int   @default(0)
+  strongSubjects  String?  // JSON array
+  weakSubjects    String?  // JSON array
+  lastPlayedAt    DateTime?
+  weeklyPlayTime  Int      @default(0)
+  monthlyPlayTime Int      @default(0)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
 }
