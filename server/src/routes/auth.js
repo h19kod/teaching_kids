@@ -89,4 +89,40 @@ router.get("/me", requireAuth, async (req, res) => {
   res.json({ user: publicUser(req.user) });
 });
 
+// Update profile (name, avatar, bio).
+const profileSchema = z.object({
+  name: z.string().min(1).optional(),
+  avatar: z.string().min(1).optional(),
+  bio: z.string().max(200).optional(),
+});
+
+router.put("/profile", requireAuth, async (req, res) => {
+  const parsed = profileSchema.safeParse(req.body);
+  if (!parsed.success) return res.status(400).json({ error: parsed.error.errors[0].message });
+  const user = await prisma.user.update({
+    where: { id: req.user.id },
+    data: parsed.data,
+  });
+  res.json({ user: publicUser(user) });
+});
+
+// Change password.
+router.post("/change-password", requireAuth, async (req, res) => {
+  const { currentPassword, newPassword } = req.body || {};
+  if (!currentPassword || !newPassword) {
+    return res.status(400).json({ error: "Both currentPassword and newPassword are required" });
+  }
+  if (newPassword.length < 4) {
+    return res.status(400).json({ error: "New password must be at least 4 characters" });
+  }
+  if (!req.user.password || !(await verifyPassword(currentPassword, req.user.password))) {
+    return res.status(401).json({ error: "Current password is incorrect" });
+  }
+  await prisma.user.update({
+    where: { id: req.user.id },
+    data: { password: await hashPassword(newPassword) },
+  });
+  res.json({ ok: true });
+});
+
 export default router;

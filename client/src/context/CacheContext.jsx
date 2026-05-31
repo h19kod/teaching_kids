@@ -38,13 +38,9 @@ export function CacheProvider({ children }) {
 
   async function fetchSubject(id, force = false) {
     if (subjectCache[id] && !force) return subjectCache[id];
-    try {
-      const data = await api.get(`/subjects/${id}`);
-      setSubjectCache(prev => ({ ...prev, [id]: data }));
-      return data;
-    } finally {
-      setSubjectsLoading(false);
-    }
+    const data = await api.get(`/subjects/${id}`);
+    setSubjectCache(prev => ({ ...prev, [id]: data }));
+    return data;
   }
 
   function invalidateSubjects() {

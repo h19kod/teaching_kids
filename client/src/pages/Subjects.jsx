@@ -21,7 +21,7 @@ export default function Subjects() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-3xl font-extrabold text-slate-800">Choose a subject 🎯</h1>
+      <h1 className="text-3xl font-extrabold text-slate-800 dark:text-slate-100">Choose a subject 🎯</h1>
       <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
         {subjects.map((s) => (
           <Link
@@ -36,9 +36,9 @@ export default function Subjects() {
             >
               {s.icon || "📘"}
             </div>
-            <h2 className="text-xl font-bold text-slate-800 mt-4">{s.name}</h2>
-            <p className="text-slate-500 text-sm">{s.description}</p>
-            <p className="text-xs font-semibold text-indigo-500 mt-3">
+            <h2 className="text-xl font-bold text-slate-800 dark:text-slate-100 mt-4">{s.name}</h2>
+            <p className="text-slate-500 dark:text-slate-400 text-sm">{s.description}</p>
+            <p className="text-xs font-semibold text-indigo-500 dark:text-indigo-400 mt-3">
               {s._count?.games ?? 0} game{(s._count?.games ?? 0) === 1 ? "" : "s"} →
             </p>
           </Link>

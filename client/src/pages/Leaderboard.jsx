@@ -74,7 +74,7 @@ export default function Leaderboard() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-3xl font-extrabold text-slate-800">🏆 Leaderboard</h1>
+      <h1 className="text-3xl font-extrabold text-slate-800 dark:text-slate-100">🏆 Leaderboard</h1>
 
       {error && <p className="text-red-500 bg-red-50 rounded-xl px-3 py-2">{error}</p>}
 
@@ -108,7 +108,7 @@ export default function Leaderboard() {
       ) : leaderboard.length > 0 ? (
         <div className="card overflow-x-auto">
           <table className="w-full text-sm min-w-[480px]">
-            <thead className="text-slate-400 text-left">
+            <thead className="text-slate-400 dark:text-slate-500 text-left">
               <tr>
                 <th className="pb-2">Rank</th>
                 <th className="pb-2">Name</th>
@@ -120,13 +120,13 @@ export default function Leaderboard() {
             </thead>
             <tbody>
               {leaderboard.map((entry, index) => (
-                <tr key={`${entry.userId}-${entry.subjectId}-${entry.gameId}`} className="border-t border-slate-100">
+                <tr key={`${entry.userId}-${entry.subjectId}-${entry.gameId}`} className="border-t border-slate-100 dark:border-slate-700">
                   <td className="py-3">{getRankIcon(index + 1)}</td>
-                  <td className="py-3 font-semibold text-slate-700">{entry.userName}</td>
-                  <td className="py-3 text-slate-500">{entry.subjectName}</td>
-                  <td className="py-3 text-slate-500">{entry.gameTitle}</td>
-                  <td className="py-3 font-bold text-indigo-600">{entry.totalScore}</td>
-                  <td className="py-3 text-slate-500">{entry.playCount}x</td>
+                  <td className="py-3 font-semibold text-slate-700 dark:text-slate-200">{entry.userName}</td>
+                  <td className="py-3 text-slate-500 dark:text-slate-400">{entry.subjectName}</td>
+                  <td className="py-3 text-slate-500 dark:text-slate-400">{entry.gameTitle}</td>
+                  <td className="py-3 font-bold text-indigo-600 dark:text-indigo-400">{entry.totalScore}</td>
+                  <td className="py-3 text-slate-500 dark:text-slate-400">{entry.playCount}x</td>
                 </tr>
               ))}
             </tbody>

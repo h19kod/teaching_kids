@@ -45,14 +45,14 @@ export default function Login() {
     <div className="min-h-[80vh] grid md:grid-cols-2 gap-8 items-center">
       <div className="hidden md:block">
         <div className="text-7xl mb-4">🎓🧮📚</div>
-        <h1 className="text-4xl font-extrabold text-slate-800 leading-tight">
-          Learning made <span className="text-indigo-600">fun!</span>
+        <h1 className="text-4xl font-extrabold text-slate-800 dark:text-slate-100 leading-tight">
+          Learning made <span className="text-indigo-600 dark:text-indigo-400">fun!</span>
         </h1>
-        <p className="mt-3 text-slate-500 text-lg">
+        <p className="mt-3 text-slate-500 dark:text-slate-400 text-lg">
           Play games, earn points, and collect badges across Math, English and more.
         </p>
         <div className="mt-6 space-y-2 text-sm text-slate-600">
-          <p className="font-semibold">Try a demo account:</p>
+          <p className="font-semibold dark:text-slate-300">Try a demo account:</p>
           <div className="flex flex-wrap gap-2">
             <button onClick={() => quickFill("admin@kids.com", "admin123")} className="btn-ghost px-3 py-1.5 text-xs">
               👑 Admin
@@ -69,7 +69,7 @@ export default function Login() {
           <GraduationCap className="w-7 h-7" />
           Kids Learning
         </div>
-        <p className="text-slate-400 mb-6">
+        <p className="text-slate-400 dark:text-slate-500 mb-6">
           {mode === "login" ? "Welcome back! Please log in." : "Create your parent account."}
         </p>
 
@@ -110,10 +110,10 @@ export default function Login() {
           </button>
         </form>
 
-        <p className="text-center text-sm text-slate-500 mt-5">
+        <p className="text-center text-sm text-slate-500 dark:text-slate-400 mt-5">
           {mode === "login" ? "New here?" : "Already have an account?"}{" "}
           <button
-            className="text-indigo-600 font-semibold"
+            className="text-indigo-600 dark:text-indigo-400 font-semibold"
             onClick={() => {
               setMode(mode === "login" ? "register" : "login");
               setError("");
@@ -122,7 +122,7 @@ export default function Login() {
             {mode === "login" ? "Create an account" : "Log in"}
           </button>
         </p>
-        <p className="text-center text-xs text-slate-400 mt-3">
+        <p className="text-center text-xs text-slate-400 dark:text-slate-500 mt-3">
           Kids sign in from the parent's <b>Family</b> page — no password needed.
         </p>
       </div>

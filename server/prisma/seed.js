@@ -11,6 +11,17 @@ async function main() {
 
   // Clean slate (order matters for FKs).
   await prisma.progress.deleteMany();
+  await prisma.userMission.deleteMany();
+  await prisma.storyProgress.deleteMany();
+  await prisma.inventory.deleteMany();
+  await prisma.achievement.deleteMany();
+  await prisma.statistics.deleteMany();
+  await prisma.leaderboardEntry.deleteMany();
+  await prisma.leaderboard.deleteMany();
+  await prisma.mission.deleteMany();
+  await prisma.reward.deleteMany();
+  await prisma.storyChapter.deleteMany();
+  await prisma.character.deleteMany();
   await prisma.game.deleteMany();
   await prisma.subject.deleteMany();
   await prisma.user.deleteMany();
@@ -102,41 +113,94 @@ async function main() {
         ],
       },
     },
-
-    // ===== ENGLISH =====
     {
-      title: "Vocabulary Voyage",
-      description: "Choose the correct meaning of each word.",
-      subjectId: english.id,
+      title: "Number Memory",
+      description: "Match number pairs!",
+      subjectId: math.id,
       difficultyLevel: 1,
       points: 100,
-      type: "quiz",
+      type: "memory",
       content: {
-        instructions: "What does each word mean?",
-        questions: [
-          { prompt: "Happy", answer: "Feeling joy", options: ["Feeling joy", "Very tired", "Quite cold", "A big animal"] },
-          { prompt: "Huge", answer: "Very big", options: ["Very small", "Very big", "Very fast", "Very quiet"] },
-          { prompt: "Begin", answer: "To start", options: ["To stop", "To start", "To sleep", "To eat"] },
+        instructions: "Flip cards to find matching number pairs.",
+        cards: [
+          { id: 1, icon: "1️⃣" },
+          { id: 1, icon: "1️⃣" },
+          { id: 2, icon: "2️⃣" },
+          { id: 2, icon: "2️⃣" },
+          { id: 3, icon: "3️⃣" },
+          { id: 3, icon: "3️⃣" },
+          { id: 4, icon: "4️⃣" },
+          { id: 4, icon: "4️⃣" },
+          { id: 5, icon: "5️⃣" },
+          { id: 5, icon: "5️⃣" },
+          { id: 6, icon: "6️⃣" },
+          { id: 6, icon: "6️⃣" },
         ],
       },
     },
     {
-      title: "Spelling Bee",
-      description: "Type the word that you hear and see.",
-      subjectId: english.id,
-      difficultyLevel: 2,
-      points: 150,
-      type: "spelling",
+      title: "Number Sorting",
+      description: "Sort numbers in ascending order!",
+      subjectId: math.id,
+      difficultyLevel: 1,
+      points: 100,
+      type: "sorting",
       content: {
-        instructions: "Look at the hint and spell the word.",
-        questions: [
-          { prompt: "A furry pet that says 'meow'", answer: "cat" },
-          { prompt: "The opposite of night", answer: "day" },
-          { prompt: "You read this object", answer: "book" },
-          { prompt: "A color of the sky on a sunny day", answer: "blue" },
+        instructions: "Sort the numbers from smallest to largest.",
+        sortBy: "ascending order",
+        items: [
+          { id: 1, icon: "1️⃣", label: "5", order: 3 },
+          { id: 2, icon: "2️⃣", label: "2", order: 1 },
+          { id: 3, icon: "3️⃣", label: "8", order: 4 },
+          { id: 4, icon: "4️⃣", label: "3", order: 2 },
         ],
       },
     },
+    {
+      title: "Math Runner",
+      description: "Run and solve math problems before time runs out!",
+      subjectId: math.id,
+      difficultyLevel: 2,
+      points: 200,
+      type: "mathrunner",
+      content: {
+        instructions: "Solve math problems before time runs out!",
+      },
+    },
+    {
+      title: "Math Battle RPG",
+      description: "Battle monsters using math skills!",
+      subjectId: math.id,
+      difficultyLevel: 3,
+      points: 300,
+      type: "grammarguardian",
+      content: {
+        instructions: "Battle monsters using correct math answers!",
+        battles: [
+          { monster: "👾", name: "Number Goblin", question: "15 + 27 = ?", correct: "42", options: ["40", "42", "44", "46"], hp: 100 },
+          { monster: "🐉", name: "Calculation Dragon", question: "8 × 7 = ?", correct: "56", options: ["48", "54", "56", "64"], hp: 120 },
+          { monster: "👻", name: "Fraction Phantom", question: "100 ÷ 4 = ?", correct: "25", options: ["20", "25", "30", "35"], hp: 90 },
+        ],
+      },
+    },
+    {
+      title: "Number World Odyssey",
+      description: "Travel between number cities with math puzzles!",
+      subjectId: math.id,
+      difficultyLevel: 3,
+      points: 300,
+      type: "wordworldodyssey",
+      content: {
+        instructions: "Travel between cities by solving math puzzles!",
+        cities: [
+          { id: 1, name: "Addition Town", icon: "➕", color: "bg-blue-400", puzzle: { word: "42", hint: "20 + 22" } },
+          { id: 2, name: "Multiplication City", icon: "✖️", color: "bg-amber-400", puzzle: { word: "56", hint: "8 × 7" } },
+          { id: 3, name: "Division Village", icon: "➗", color: "bg-purple-400", puzzle: { word: "25", hint: "100 ÷ 4" } },
+        ],
+      },
+    },
+
+    // ===== ENGLISH =====
     {
       title: "Picture Match",
       description: "Match each word to its picture.",
@@ -171,6 +235,116 @@ async function main() {
         ],
       },
     },
+    {
+      title: "Word Memory",
+      description: "Match word pairs!",
+      subjectId: english.id,
+      difficultyLevel: 1,
+      points: 100,
+      type: "memory",
+      content: {
+        instructions: "Flip cards to find matching word pairs.",
+        cards: [
+          { id: 1, icon: "🐕" },
+          { id: 1, icon: "🐕" },
+          { id: 2, icon: "🐱" },
+          { id: 2, icon: "🐱" },
+          { id: 3, icon: "🐰" },
+          { id: 3, icon: "🐰" },
+          { id: 4, icon: "🦊" },
+          { id: 4, icon: "🦊" },
+          { id: 5, icon: "🐻" },
+          { id: 5, icon: "🐻" },
+          { id: 6, icon: "🦁" },
+          { id: 6, icon: "🦁" },
+        ],
+      },
+    },
+    {
+      title: "Alphabet Sorting",
+      description: "Sort words alphabetically!",
+      subjectId: english.id,
+      difficultyLevel: 1,
+      points: 100,
+      type: "sorting",
+      content: {
+        instructions: "Sort the words in alphabetical order (A-Z).",
+        sortBy: "alphabetical order",
+        items: [
+          { id: 1, icon: "🍎", label: "Apple", order: 1 },
+          { id: 2, icon: "🍌", label: "Banana", order: 2 },
+          { id: 3, icon: "🍒", label: "Cherry", order: 3 },
+          { id: 4, icon: "🍇", label: "Grape", order: 4 },
+        ],
+      },
+    },
+    {
+      title: "Word Runner",
+      description: "Run and collect words before time runs out!",
+      subjectId: english.id,
+      difficultyLevel: 2,
+      points: 200,
+      type: "wordrunner",
+      content: {
+        instructions: "Collect all the words before time runs out!",
+        words: ["CAT", "DOG", "SUN", "RUN", "FUN", "WIN"],
+      },
+    },
+    {
+      title: "Grammar Guardian",
+      description: "Battle monsters using correct grammar!",
+      subjectId: english.id,
+      difficultyLevel: 3,
+      points: 300,
+      type: "grammarguardian",
+      content: {
+        instructions: "Battle monsters using correct grammar!",
+      },
+    },
+    {
+      title: "Spelling Quest RPG",
+      description: "RPG-style game with spelling levels!",
+      subjectId: english.id,
+      difficultyLevel: 3,
+      points: 300,
+      type: "spellingquestrpg",
+      content: {
+        instructions: "Level up by improving spelling skills!",
+      },
+    },
+    {
+      title: "Word World Odyssey",
+      description: "Travel between cities with word puzzles!",
+      subjectId: english.id,
+      difficultyLevel: 3,
+      points: 300,
+      type: "wordworldodyssey",
+      content: {
+        instructions: "Travel between cities by solving word puzzles!",
+      },
+    },
+    {
+      title: "Sentence Builder Adventure",
+      description: "Build sentences to unlock doors and paths!",
+      subjectId: english.id,
+      difficultyLevel: 3,
+      points: 300,
+      type: "sentencebuilder",
+      content: {
+        instructions: "Build correct sentences to unlock doors and paths!",
+      },
+    },
+    {
+      title: "Language Mystery Island",
+      description: "Escape island with hidden clues and puzzles!",
+      subjectId: english.id,
+      difficultyLevel: 3,
+      points: 300,
+      type: "languagemysteryisland",
+      content: {
+        instructions: "Escape the island by solving language puzzles!",
+      },
+    },
 
     // ===== SCIENCE (extensibility demo) =====
     {
@@ -186,6 +360,97 @@ async function main() {
           { prompt: "Moo!", answer: "Cow", options: ["Cow", "Dog", "Cat", "Duck"] },
           { prompt: "Woof!", answer: "Dog", options: ["Cow", "Dog", "Sheep", "Frog"] },
           { prompt: "Quack!", answer: "Duck", options: ["Lion", "Duck", "Bird", "Bee"] },
+        ],
+      },
+    },
+    {
+      title: "Animal Drag & Drop",
+      description: "Drag animals to their habitats!",
+      subjectId: science.id,
+      difficultyLevel: 1,
+      points: 100,
+      type: "dragdrop",
+      content: {
+        instructions: "Drag each animal to its correct habitat.",
+        items: [
+          { id: 1, icon: "🐟", label: "Fish", correctZoneId: 1 },
+          { id: 2, icon: "🐦", label: "Bird", correctZoneId: 2 },
+          { id: 3, icon: "🦁", label: "Lion", correctZoneId: 3 },
+          { id: 4, icon: "🐻", label: "Bear", correctZoneId: 4 },
+        ],
+        zones: [
+          { id: 1, icon: "🌊", label: "Water" },
+          { id: 2, icon: "☁️", label: "Sky" },
+          { id: 3, icon: "🌍", label: "Savanna" },
+          { id: 4, icon: "🌲", label: "Forest" },
+        ],
+      },
+    },
+    {
+      title: "Animal Memory",
+      description: "Match animal pairs!",
+      subjectId: science.id,
+      difficultyLevel: 1,
+      points: 100,
+      type: "memory",
+      content: {
+        instructions: "Flip cards to find matching animal pairs.",
+        cards: [
+          { id: 1, icon: "🐶" },
+          { id: 1, icon: "🐶" },
+          { id: 2, icon: "🐱" },
+          { id: 2, icon: "🐱" },
+          { id: 3, icon: "🐭" },
+          { id: 3, icon: "🐭" },
+          { id: 4, icon: "🐹" },
+          { id: 4, icon: "🐹" },
+          { id: 5, icon: "🐰" },
+          { id: 5, icon: "🐰" },
+          { id: 6, icon: "🦊" },
+          { id: 6, icon: "🦊" },
+        ],
+      },
+    },
+    {
+      title: "Animal Rescue",
+      description: "Rescue animals before time runs out!",
+      subjectId: science.id,
+      difficultyLevel: 2,
+      points: 200,
+      type: "animalrescue",
+      content: {
+        instructions: "Rescue animals before time runs out!",
+      },
+    },
+    {
+      title: "Science Battle RPG",
+      description: "Battle monsters using science knowledge!",
+      subjectId: science.id,
+      difficultyLevel: 3,
+      points: 300,
+      type: "grammarguardian",
+      content: {
+        instructions: "Battle monsters using correct science answers!",
+        battles: [
+          { monster: "🦠", name: "Virus Villain", question: "What gives plants their green color?", correct: "Chlorophyll", options: ["Water", "Chlorophyll", "Sunlight", "Air"], hp: 100 },
+          { monster: "🌋", name: "Volcano Beast", question: "What is the center of Earth called?", correct: "Core", options: ["Crust", "Mantle", "Core", "Surface"], hp: 120 },
+          { monster: "⚡", name: "Lightning Lord", question: "What do we call animals that eat only plants?", correct: "Herbivores", options: ["Carnivores", "Herbivores", "Omnivores", "Insectivores"], hp: 90 },
+        ],
+      },
+    },
+    {
+      title: "Nature World Odyssey",
+      description: "Travel between nature locations with science puzzles!",
+      subjectId: science.id,
+      difficultyLevel: 3,
+      points: 300,
+      type: "wordworldodyssey",
+      content: {
+        instructions: "Travel between locations by solving science puzzles!",
+        cities: [
+          { id: 1, name: "Forest Zone", icon: "🌲", color: "bg-green-400", puzzle: { word: "TREE", hint: "Tall plant with leaves" } },
+          { id: 2, name: "Ocean Zone", icon: "🌊", color: "bg-blue-400", puzzle: { word: "WATER", hint: "H2O" } },
+          { id: 3, name: "Mountain Zone", icon: "⛰️", color: "bg-gray-400", puzzle: { word: "ROCK", hint: "Hard material from earth" } },
         ],
       },
     },
@@ -209,54 +474,121 @@ async function main() {
       },
     },
     {
-      title: "Space Math",
-      description: "Solve space-themed math problems!",
-      subjectId: space.id,
-      difficultyLevel: 2,
-      points: 150,
-      type: "math",
-      content: {
-        instructions: "Calculate the answer to each space problem.",
-        questions: [
-          { prompt: "A rocket travels 500 miles. How many more miles to reach 1000?", answer: 500, options: [400, 500, 600, 700] },
-          { prompt: "If there are 8 planets and 3 are gas giants, how many are not?", answer: 5, options: [3, 4, 5, 6] },
-          { prompt: "A star is 4.5 billion years old. How old in billions?", answer: 4.5, options: [3, 4, 4.5, 5] },
-          { prompt: "5 astronauts × 2 spacesuits each = ?", answer: 10, options: [7, 8, 10, 12] },
-        ],
-      },
-    },
-    {
-      title: "Constellation Match",
-      description: "Match the constellation name to its description!",
-      subjectId: space.id,
-      difficultyLevel: 2,
-      points: 150,
-      type: "matching",
-      content: {
-        instructions: "Match each constellation to its description.",
-        pairs: [
-          { word: "Big Dipper", match: "🌟" },
-          { word: "Orion", match: "🏹" },
-          { word: "Cassiopeia", match: "👑" },
-          { word: "Scorpius", match: "🦂" },
-          { word: "Ursa Major", match: "🐻" },
-        ],
-      },
-    },
-    {
-      title: "Space Spelling",
-      description: "Spell space-related words correctly!",
+      title: "Planet Drag & Drop",
+      description: "Drag planets to their correct zones!",
       subjectId: space.id,
       difficultyLevel: 1,
       points: 100,
-      type: "spelling",
+      type: "dragdrop",
       content: {
-        instructions: "Look at the hint and spell the space word.",
-        questions: [
-          { prompt: "The planet we live on", answer: "Earth" },
-          { prompt: "Our closest star", answer: "Sun" },
-          { prompt: "Earth's natural satellite", answer: "Moon" },
-          { prompt: "People who travel to space", answer: "astronaut" },
+        instructions: "Drag each planet to its correct zone.",
+        items: [
+          { id: 1, icon: "🪐", label: "Saturn", correctZoneId: 1 },
+          { id: 2, icon: "🌍", label: "Earth", correctZoneId: 2 },
+          { id: 3, icon: "🔴", label: "Mars", correctZoneId: 3 },
+          { id: 4, icon: "🌕", label: "Moon", correctZoneId: 4 },
+        ],
+        zones: [
+          { id: 1, icon: "🪐", label: "Gas Giant" },
+          { id: 2, icon: "🌍", label: "Habitable" },
+          { id: 3, icon: "🔴", label: "Rocky Planet" },
+          { id: 4, icon: "🌕", label: "Satellite" },
+        ],
+      },
+    },
+    {
+      title: "Space Memory",
+      description: "Match space-themed cards!",
+      subjectId: space.id,
+      difficultyLevel: 1,
+      points: 100,
+      type: "memory",
+      content: {
+        instructions: "Flip cards to find matching pairs.",
+        cards: [
+          { id: 1, icon: "🚀" },
+          { id: 1, icon: "🚀" },
+          { id: 2, icon: "🌟" },
+          { id: 2, icon: "🌟" },
+          { id: 3, icon: "🌙" },
+          { id: 3, icon: "🌙" },
+          { id: 4, icon: "🪐" },
+          { id: 4, icon: "🪐" },
+          { id: 5, icon: "☄️" },
+          { id: 5, icon: "☄️" },
+          { id: 6, icon: "🌍" },
+          { id: 6, icon: "🌍" },
+        ],
+      },
+    },
+    {
+      title: "Space Word Builder",
+      description: "Build space-related words!",
+      subjectId: space.id,
+      difficultyLevel: 1,
+      points: 100,
+      type: "wordbuilder",
+      content: {
+        instructions: "Arrange the letters to form the correct word.",
+        words: [
+          { word: "MOON", hint: "Earth's natural satellite" },
+          { word: "STAR", hint: "A bright object in the night sky" },
+          { word: "MARS", hint: "The Red Planet" },
+          { word: "ORBIT", hint: "Path around a planet" },
+        ],
+      },
+    },
+    {
+      title: "Rocket Mission",
+      description: "Launch your rocket to space!",
+      subjectId: space.id,
+      difficultyLevel: 2,
+      points: 200,
+      type: "rocketmission",
+      content: {
+        instructions: "Launch your rocket to space! Collect stars and avoid asteroids!",
+      },
+    },
+    {
+      title: "Planet Hopper",
+      description: "Jump between planets!",
+      subjectId: space.id,
+      difficultyLevel: 2,
+      points: 200,
+      type: "planethopper",
+      content: {
+        instructions: "Jump between planets to explore the solar system!",
+      },
+    },
+    {
+      title: "Galaxy Battle RPG",
+      description: "Battle space monsters using space knowledge!",
+      subjectId: space.id,
+      difficultyLevel: 3,
+      points: 300,
+      type: "grammarguardian",
+      content: {
+        instructions: "Battle monsters using correct space answers!",
+        battles: [
+          { monster: "👽", name: "Alien Invader", question: "What is the closest planet to the Sun?", correct: "Mercury", options: ["Venus", "Mercury", "Mars", "Earth"], hp: 100 },
+          { monster: "☄️", name: "Comet Crusher", question: "What is the name of our galaxy?", correct: "Milky Way", options: ["Andromeda", "Milky Way", "Whirlpool", "Sombrero"], hp: 120 },
+          { monster: "🌑", name: "Eclipse Emperor", question: "What causes a solar eclipse?", correct: "Moon blocking Sun", options: ["Earth blocking Sun", "Moon blocking Sun", "Sun blocking Moon", "Stars blocking Sun"], hp: 90 },
+        ],
+      },
+    },
+    {
+      title: "Galaxy World Odyssey",
+      description: "Travel between planets with space puzzles!",
+      subjectId: space.id,
+      difficultyLevel: 3,
+      points: 300,
+      type: "wordworldodyssey",
+      content: {
+        instructions: "Travel between planets by solving space puzzles!",
+        cities: [
+          { id: 1, name: "Mercury Base", icon: "⚪", color: "bg-gray-400", puzzle: { word: "HOT", hint: "Closest to the Sun" } },
+          { id: 2, name: "Mars Colony", icon: "🔴", color: "bg-red-400", puzzle: { word: "RED", hint: "The Red Planet" } },
+          { id: 3, name: "Jupiter Station", icon: "🟠", color: "bg-orange-400", puzzle: { word: "BIG", hint: "Largest planet" } },
         ],
       },
     },
@@ -286,6 +618,134 @@ async function main() {
   const allGames = await prisma.game.findMany();
   await prisma.progress.create({ data: { userId: lily.id, gameId: allGames[0].id, score: 100, completed: true } });
   await prisma.progress.create({ data: { userId: lily.id, gameId: allGames[4].id, score: 80, completed: true } });
+
+  // --- Characters ---
+  await prisma.character.createMany({
+    data: [
+      { name: "Leo the Explorer", description: "A brave explorer ready for any adventure!", icon: "🦁", type: "explorer", rarity: "common", cost: 0 },
+      { name: "Nova the Space Ranger", description: "A fearless space ranger from the future!", icon: "🚀", type: "space_ranger", rarity: "rare", cost: 50 },
+      { name: "Merlin the Math Knight", description: "A powerful knight who solves math puzzles!", icon: "🧙", type: "math_knight", rarity: "rare", cost: 50 },
+      { name: "Aria the English Hero", description: "A word wizard who masters language!", icon: "🧚", type: "english_hero", rarity: "epic", cost: 100 },
+      { name: "Darwin the Science Wizard", description: "A genius scientist with magical powers!", icon: "🔬", type: "science_wizard", rarity: "epic", cost: 100 },
+      { name: "Phoenix the Legend", description: "A legendary hero born from fire!", icon: "🔥", type: "explorer", rarity: "legendary", cost: 0, unlockedBy: "champion" },
+    ],
+  });
+
+  // --- Rewards ---
+  await prisma.reward.createMany({
+    data: [
+      { name: "Golden Crown", description: "A shiny crown for champions!", icon: "👑", type: "decoration", rarity: "rare", cost: 100, costType: "coins" },
+      { name: "Rainbow Cape", description: "A colorful cape for your journey!", icon: "🌈", type: "costume", rarity: "common", cost: 50, costType: "coins" },
+      { name: "Space Rocket Pet", description: "A tiny rocket that follows you!", icon: "🚀", type: "pet", rarity: "epic", cost: 30, costType: "gems" },
+      { name: "Lucky Star", description: "A star that brings good luck!", icon: "⭐", type: "special_effect", rarity: "common", cost: 20, costType: "stars" },
+      { name: "Dragon Shield", description: "A powerful shield from a dragon!", icon: "🐲", type: "decoration", rarity: "epic", cost: 200, costType: "coins" },
+      { name: "Magic Wand", description: "Cast spells and solve puzzles!", icon: "🪄", type: "special_effect", rarity: "rare", cost: 80, costType: "coins" },
+      { name: "Unicorn Pet", description: "A magical unicorn companion!", icon: "🦄", type: "pet", rarity: "legendary", cost: 100, costType: "gems" },
+      { name: "Pirate Hat", description: "Sail the learning seas!", icon: "🏴‍☠️", type: "costume", rarity: "common", cost: 30, costType: "coins" },
+    ],
+  });
+
+  // --- Missions (Daily) ---
+  await prisma.mission.createMany({
+    data: [
+      { title: "Daily Player", description: "Play 1 game today", type: "daily", category: "games", target: 1, xpReward: 20, coinReward: 10, starReward: 1 },
+      { title: "Game Streaker", description: "Play 3 games today", type: "daily", category: "games", target: 3, xpReward: 50, coinReward: 25, starReward: 2 },
+      { title: "Point Collector", description: "Earn 100 points today", type: "daily", category: "points", target: 100, xpReward: 30, coinReward: 15, gemReward: 1 },
+      { title: "Speed Runner", description: "Complete 2 games with perfect score", type: "daily", category: "games", target: 2, xpReward: 60, coinReward: 30, starReward: 3 },
+      // --- Missions (Weekly) ---
+      { title: "Weekly Warrior", description: "Play 10 games this week", type: "weekly", category: "games", target: 10, xpReward: 150, coinReward: 100, starReward: 5, gemReward: 2 },
+      { title: "Subject Master", description: "Play games in 3 different subjects", type: "weekly", category: "games", target: 3, xpReward: 200, coinReward: 120, gemReward: 3 },
+      { title: "High Achiever", description: "Earn 500 points this week", type: "weekly", category: "points", target: 500, xpReward: 250, coinReward: 150, starReward: 10, gemReward: 5 },
+      { title: "Story Teller", description: "Complete 2 story chapters this week", type: "weekly", category: "story", target: 2, xpReward: 300, coinReward: 200, gemReward: 8 },
+    ],
+  });
+
+  // --- Story Chapters ---
+  await prisma.storyChapter.createMany({
+    data: [
+      {
+        chapter: 1,
+        title: "The Lost Kingdom",
+        description: "Help the young hero find the lost kingdom of numbers!",
+        world: "math",
+        requiredLevel: 1,
+        xpReward: 100,
+        coinReward: 50,
+        content: JSON.stringify({
+          scenes: [
+            { id: 1, text: "Once upon a time, a young hero discovers a mysterious map...", character: "🦁", background: "🏰" },
+            { id: 2, text: "The map leads to the Kingdom of Numbers, hidden beyond the Math Mountains!", character: "🦁", background: "⛰️" },
+            { id: 3, text: "To unlock the gates, you must solve the ancient math puzzles!", character: "🧙", background: "🔮" },
+          ],
+          challenge: { type: "math", question: "2 + 3 = ?", answer: "5", options: ["4", "5", "6", "7"] },
+        }),
+      },
+      {
+        chapter: 2,
+        title: "The Word Wizards",
+        description: "Journey through the enchanted forest of words!",
+        world: "english",
+        requiredLevel: 1,
+        xpReward: 120,
+        coinReward: 60,
+        content: JSON.stringify({
+          scenes: [
+            { id: 1, text: "Deep in the Enchanted Forest, ancient words hold magical power...", character: "🧚", background: "🌲" },
+            { id: 2, text: "The Word Wizards need your help to restore the lost spell book!", character: "🧚", background: "📚" },
+            { id: 3, text: "Only the one who masters spelling can break the silence curse!", character: "🧙", background: "✨" },
+          ],
+          challenge: { type: "spelling", word: "MAGIC", hint: "Something wonderful and mysterious" },
+        }),
+      },
+      {
+        chapter: 3,
+        title: "The Science Lab Mystery",
+        description: "Uncover the mystery of the missing experiments!",
+        world: "science",
+        requiredLevel: 2,
+        xpReward: 150,
+        coinReward: 75,
+        content: JSON.stringify({
+          scenes: [
+            { id: 1, text: "In Professor Darwin's laboratory, strange things are happening...", character: "🔬", background: "🧪" },
+            { id: 2, text: "The experiments have gone missing! Only a science whiz can find them!", character: "🔬", background: "⚗️" },
+            { id: 3, text: "Use your science knowledge to uncover the mystery!", character: "🧙", background: "🌍" },
+          ],
+          challenge: { type: "quiz", question: "What gives plants their green color?", answer: "Chlorophyll", options: ["Water", "Chlorophyll", "Sunlight", "Soil"] },
+        }),
+      },
+      {
+        chapter: 4,
+        title: "Mission to the Stars",
+        description: "Embark on an epic space mission beyond our solar system!",
+        world: "space",
+        requiredLevel: 3,
+        xpReward: 200,
+        coinReward: 100,
+        content: JSON.stringify({
+          scenes: [
+            { id: 1, text: "Commander Nova receives a distress signal from deep space...", character: "🚀", background: "🌌" },
+            { id: 2, text: "A distant planet needs help! The mission begins now!", character: "🚀", background: "🪐" },
+            { id: 3, text: "Navigate through the asteroid belt using your space knowledge!", character: "👨‍🚀", background: "☄️" },
+          ],
+          challenge: { type: "quiz", question: "What is the largest planet in our solar system?", answer: "Jupiter", options: ["Saturn", "Jupiter", "Neptune", "Uranus"] },
+        }),
+      },
+    ],
+  });
+
+  // --- Leaderboards ---
+  await prisma.leaderboard.createMany({
+    data: [
+      { name: "Weekly Champions", category: "weekly", period: "week" },
+      { name: "Monthly Stars", category: "monthly", period: "month" },
+      { name: "All Time Legends", category: "all_time", period: "all" },
+      { name: "Math Masters", category: "math", period: "all" },
+      { name: "English Experts", category: "english", period: "all" },
+      { name: "Science Scholars", category: "science", period: "all" },
+      { name: "Space Explorers", category: "space", period: "all" },
+    ],
+  });
 
   console.log("Seed complete.");
   console.log("Logins:");

@@ -3,6 +3,21 @@ import express from "express";
 import cors from "cors";
 import morgan from "morgan";
 
+// Simple in-memory rate limiter (no external deps needed)
+const rateLimitMap = new Map();
+function rateLimit({ windowMs = 60000, max = 100 } = {}) {
+  return (req, res, next) => {
+    const key = req.ip + ":" + req.path;
+    const now = Date.now();
+    const entry = rateLimitMap.get(key) || { count: 0, start: now };
+    if (now - entry.start > windowMs) { entry.count = 0; entry.start = now; }
+    entry.count++;
+    rateLimitMap.set(key, entry);
+    if (entry.count > max) return res.status(429).json({ error: "Too many requests, please slow down." });
+    next();
+  };
+}
+
 import authRoutes from "./routes/auth.js";
 import subjectRoutes from "./routes/subjects.js";
 import gameRoutes from "./routes/games.js";
@@ -11,6 +26,11 @@ import userRoutes from "./routes/users.js";
 import statsRoutes from "./routes/stats.js";
 import leaderboardRoutes from "./routes/leaderboard.js";
 import achievementRoutes from "./routes/achievements.js";
+import adaptiveRoutes from "./routes/adaptive.js";
+import missionsRoutes from "./routes/missions.js";
+import rewardsRoutes from "./routes/rewards.js";
+import storyRoutes from "./routes/story.js";
+import charactersRoutes from "./routes/characters.js";
 
 const app = express();
 const PORT = process.env.PORT || 4000;
@@ -25,6 +45,10 @@ app.use(morgan("dev"));
 
 app.get("/api/health", (req, res) => res.json({ status: "ok" }));
 
+// Rate limiting: max 20 auth attempts per minute per IP
+app.use("/api/auth/login", rateLimit({ windowMs: 60000, max: 20 }));
+app.use("/api/auth/register", rateLimit({ windowMs: 60000, max: 10 }));
+
 app.use("/api/auth", authRoutes);
 app.use("/api/subjects", subjectRoutes);
 app.use("/api/games", gameRoutes);
@@ -33,6 +57,11 @@ app.use("/api/users", userRoutes);
 app.use("/api/stats", statsRoutes);
 app.use("/api/leaderboard", leaderboardRoutes);
 app.use("/api/achievements", achievementRoutes);
+app.use("/api/adaptive", adaptiveRoutes);
+app.use("/api/missions", missionsRoutes);
+app.use("/api/rewards", rewardsRoutes);
+app.use("/api/story", storyRoutes);
+app.use("/api/characters", charactersRoutes);
 
 // Centralized error handler.
 app.use((err, req, res, next) => {
